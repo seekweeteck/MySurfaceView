@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My SurfaceView</string>
+    <string name="set">Set</string>
+</resources>
