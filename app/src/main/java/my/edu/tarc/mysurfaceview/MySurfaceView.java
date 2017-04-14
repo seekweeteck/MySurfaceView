@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -26,11 +27,10 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
     int yStation;
     int xPos = 0;
     int yPos = 0;
-    int deltaX = 5;
-    int deltaY = 5;
     int iconWidth;
     int iconHeight;
-    int lineHeight;
+    int xLine, yLine;
+    int heightStation, heightLine;
 
     public MySurfaceView(Context context) {
         super(context);
@@ -68,13 +68,13 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
         bmpStation = BitmapFactory.decodeResource(getResources(),
                 R.drawable.ic_brightness_1_black_24dp);
 
-        xStation = 0;
-        yStation = 0;
+        heightStation = bmpStation.getHeight();
+        heightStation /=2;
 
         bmpLine = BitmapFactory.decodeResource(getResources(),
                 R.drawable.ic_line_black_24dp);
-
-        lineHeight = bmpLine.getHeight();
+        heightLine = bmpLine.getHeight();
+        heightLine /=2;
 
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
 
@@ -86,6 +86,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
                 /*Canvas canvas = holder.lockCanvas(null);
                 drawSomething(canvas);
                 holder.unlockCanvasAndPost(canvas);*/
+                xStation = getWidth()/2 - bmpStation.getWidth()/2;
+                xLine = getWidth()/2 - bmpLine.getWidth()/2;
             }
 
             @Override
@@ -116,13 +118,15 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
         yPos = mainActivity.yPos;
 
         canvas.drawColor(Color.LTGRAY);
-        for(int i=0, x = xPos, y = yPos; i < stationCount; i++){
+        for(int i=0, y = yPos; i < stationCount; i++){
             canvas.drawBitmap(bmpStation,
-                    x, y, null);
-            y += 24;
+                    xStation, y, null);
+            y += heightStation;
+            Log.d("Draw Station " + i, " y="+y);
             canvas.drawBitmap(bmpLine,
-                    x, y, null);
-            y += 64;
+                    xLine, y, null);
+            y += heightLine;
+            Log.d("Draw Line "+i, " y="+y);
         }
 
     }
