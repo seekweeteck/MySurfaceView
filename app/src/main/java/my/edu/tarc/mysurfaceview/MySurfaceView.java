@@ -6,34 +6,35 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.widget.TextView;
 
 /**
  * Created by KweeTeck on 4/14/2017.
  */
 
-public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickListener {
+public class MySurfaceView extends SurfaceView {
 
     MainActivity mainActivity;
 
     private SurfaceHolder surfaceHolder;
-    private Bitmap bmpIcon, bmpStation, bmpLine;
+    private Drawable  drawableStation, drawableLine;
+    private Bitmap bitmapStation, bitmapLine;
     private TextView textViewStation;
     private MyThread myThread;
     private int stationCount=5;
     int midStage;
     int yStation;
     int xPos = 0;
-    int yPos = 0;
+    int yPos = 50;
     int iconWidth;
-    int iconHeight;
     int xLine, yLine;
-    int heightStation, heightLine;
+    int heightStation = 10, heightLine=50;
+    int gapSize;
 
     public MySurfaceView(Context context) {
         super(context);
@@ -60,17 +61,22 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
         /*myThread = new MyThread(this);*/
         surfaceHolder = getHolder();
 
+        Drawable drawableStation = VectorDrawableCompat.create(getResources(), R.drawable.ic_station, null);
+        bitmapStation = BitmapFactory.decodeResource(getResources() , R.drawable.ic_action_station);
 
-        bmpIcon = BitmapFactory.decodeResource(getResources(),
-                R.drawable.ic_directions_bus_black_24dp);
+        if(drawableStation != null){
+            heightStation = drawableStation.getMinimumHeight() / 2;
+        }
 
-        bmpStation = BitmapFactory.decodeResource(getResources(),
-                R.drawable.ic_station);
-        heightStation = bmpStation.getHeight() / 2;
 
-        bmpLine = BitmapFactory.decodeResource(getResources(),
-                R.drawable.ic_line);
-        heightLine = bmpLine.getHeight() / 2;
+
+        Drawable drawableLine = VectorDrawableCompat.create(getResources(), R.drawable.ic_line, null);
+
+        if(drawableLine != null){
+            bitmapLine = BitmapFactory.decodeResource(getResources(), R.drawable.ic_line);
+            heightLine = drawableLine.getMinimumHeight() / 2;
+        }
+
 
         surfaceHolder.addCallback(new SurfaceHolder.Callback() {
 
@@ -79,8 +85,11 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
                 //myThread.setRunning(true);
                 //myThread.start();
 
-                midStage = getWidth() / 2 - bmpStation.getWidth() / 2;
-                xLine = getWidth() / 2 - bmpLine.getWidth() / 2;
+                /*midStage = getWidth() / 2 - drawableStation.getMinimumWidth() / 2;
+                xLine = getWidth() / 2 - getContext().drawableLine.getMinimumWidth() / 2;*/
+
+                midStage = getWidth() / 2;
+                xLine = getWidth() / 2;
 
                 Canvas canvas = holder.lockCanvas(null);
                 drawStation(canvas);
@@ -117,31 +126,29 @@ public class MySurfaceView extends SurfaceView implements SurfaceView.OnClickLis
     protected void drawStation(Canvas canvas) {
         Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setColor(Color.BLUE);
-        //textPaint.setStyle(Paint.Style.FILL);
+
         textPaint.setTextSize(getResources().getDimensionPixelSize(R.dimen.textNormal));
 
-        //stationCount = mainActivity.stationCount;
-        //yPos = mainActivity.yPos;
-
+        stationCount = mainActivity.stationCount;
         canvas.drawColor(Color.WHITE);
-        for (int i = 1; i <= stationCount; i++) {
-            canvas.drawBitmap(bmpStation,
-                    midStage, yPos, null);
-            canvas.drawText("Station " + i, midStage + 50, yPos, textPaint);
 
-            yPos = yPos + heightStation; //12
-            Log.d("yPos", i +"=" + yPos + " heightStation=" + heightStation);
+        gapSize = heightStation / 2;
+
+        for (int i = 1; i <= stationCount; i++) {
+            canvas.drawCircle(midStage,yPos,heightStation, textPaint);
+            canvas.drawText("Station " + i, midStage+50, yPos+15, textPaint);
+
+            yPos += heightStation; //12
+
             if(i != stationCount){
-                canvas.drawBitmap(bmpLine,
-                        xLine, yPos, null);
-                yPos = yPos + heightLine; //100
-                Log.d("yPos", "=" + yPos + " heightLine=" + heightLine);
+                canvas.drawRect(midStage-5, yPos, midStage+5, (yPos + heightLine),textPaint);
+                yPos += heightLine; //100
             }
         }
     }
 
-    @Override
+    /*@Override
     public void onClick(View view) {
         stationCount = mainActivity.stationCount;
-    }
+    }*/
 }
